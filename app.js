@@ -3,6 +3,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const ejs = require("ejs");
+const _ = require("lodash");
 const { title } = require("process");
 
 const homeStartingContent = "This is where the show notes will appear.";
@@ -46,7 +47,20 @@ app.post("/", function(req, res){
  
 });
 
-app.get("posts/:post")
+app.get("/posts/:postName", function(req, res){
+  const requestedTitle = _.lowerCase(req.params.postName);
+
+  posts.forEach(function(post){
+    const storedTitle = _.lowerCase(post.title);
+
+    if(storedTitle === requestedTitle) {
+      res.render("post", {
+        title: post.title,
+        content: post.content
+      });
+    };
+  });
+});
 
 app.get("/compose", function(req, res){
   res.render("compose");
